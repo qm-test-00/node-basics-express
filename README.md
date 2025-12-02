@@ -13,6 +13,8 @@
 - `GET /users/:id` → Utente singolo
 - `POST /users` → Crea utente (201 Created)
 - `DELETE /users/:id` → Elimina utente (204 No Content)
+- `POST /tasks/heavy` → Lancia task pesante su worker thread (202 Accepted)
+- `GET /tasks/:taskId` → Stato e risultato del task
 
 **Schema Utente:**
 
@@ -22,6 +24,22 @@ interface User {
   name: string; // min 2 char
   email: string; // valid email
   createdAt: string; // ISO Date
+}
+```
+
+**Schema Task (Worker Thread):**
+
+```typescript
+interface HeavyTaskRequest {
+  iterations: number; // min 1, max 1000000
+}
+
+interface HeavyTaskResponse {
+  taskId: string; // UUID
+  status: "processing" | "completed" | "error";
+  iterations: number;
+  result?: number; // Somma dei numeri primi trovati
+  duration?: number; // ms
 }
 ```
 
@@ -114,9 +132,15 @@ npm run test:api
 1. **Validazione:** Usa Zod per validare i dati in input
 2. **UUID:** Usa `uuid.v4()` per generare ID unici
 3. **Paginazione:** Calcola offset = (page - 1) \* limit
-4. **Status Code:**
+4. **Worker Threads:** Usa `worker_threads` per task pesanti
+   - Crea un file worker separato (es. `heavy-task.worker.ts`)
+   - Usa `new Worker()` per lanciare il worker
+   - Comunica con `postMessage` e `on('message')`
+   - Memorizza lo stato dei task in una Map/oggetto
+5. **Status Code:**
    - 200 OK (GET successo)
    - 201 Created (POST successo)
+   - 202 Accepted (Task avviato)
    - 204 No Content (DELETE successo)
    - 400 Bad Request (validazione fallita)
    - 404 Not Found (risorsa non trovata)

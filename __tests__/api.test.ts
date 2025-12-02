@@ -274,4 +274,111 @@ describe("Users API Tests", () => {
       await request(app).get(`/users/${userId}`).expect(404);
     });
   });
+
+  describe.skip("POST /tasks/heavy", () => {
+    it("should start a heavy task on worker thread and return 202", async () => {
+      const taskData = {
+        iterations: 100000,
+      };
+
+      const response = await request(app)
+        .post("/tasks/heavy")
+        .send(taskData)
+        .expect(202);
+
+      // Verifica struttura risposta
+      expect(response.body).toHaveProperty("taskId");
+      expect(response.body).toHaveProperty("status", "processing");
+      expect(response.body).toHaveProperty("iterations", taskData.iterations);
+
+      // Verifica UUID format per taskId
+      expect(response.body.taskId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      );
+    });
+
+    it("should return 400 for invalid iterations (must be positive number)", async () => {
+      const invalidTask = {
+        iterations: -100,
+      };
+
+      const response = await request(app)
+        .post("/tasks/heavy")
+        .send(invalidTask)
+        .expect(400);
+
+      expect(response.body).toHaveProperty("error");
+    });
+
+    it("should return 400 for iterations exceeding maximum (1000000)", async () => {
+      const invalidTask = {
+        iterations: 2000000,
+      };
+
+      const response = await request(app)
+        .post("/tasks/heavy")
+        .send(invalidTask)
+        .expect(400);
+
+      expect(response.body).toHaveProperty("error");
+    });
+
+    it("should return 400 for missing iterations field", async () => {
+      await request(app).post("/tasks/heavy").send({}).expect(400);
+    });
+
+    it("should return 400 for non-numeric iterations", async () => {
+      const invalidTask = {
+        iterations: "not-a-number",
+      };
+
+      await request(app).post("/tasks/heavy").send(invalidTask).expect(400);
+    });
+  });
+
+  describe.skip("GET /tasks/:taskId", () => {
+    let taskId: string;
+
+    beforeAll(async () => {
+      // Crea un task per i test
+      const response = await request(app)
+        .post("/tasks/heavy")
+        .send({ iterations: 50000 });
+      taskId = response.body.taskId;
+    });
+
+    it("should return task status and result when completed", async () => {
+      // Attendi un po' per dare tempo al worker di completare
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const response = await request(app).get(`/tasks/${taskId}`).expect(200);
+
+      expect(response.body).toHaveProperty("taskId", taskId);
+      expect(response.body).toHaveProperty("status");
+      expect(["processing", "completed", "error"]).toContain(
+        response.body.status
+      );
+
+      // Se completato, verifica presenza risultati
+      if (response.body.status === "completed") {
+        expect(response.body).toHaveProperty("result");
+        expect(response.body).toHaveProperty("duration");
+        expect(response.body).toHaveProperty("iterations");
+        expect(typeof response.body.result).toBe("number");
+        expect(typeof response.body.duration).toBe("number");
+      }
+    });
+
+    it("should return 404 for non-existent task id", async () => {
+      const fakeId = "00000000-0000-0000-0000-000000000000";
+      const response = await request(app).get(`/tasks/${fakeId}`).expect(404);
+
+      expect(response.body).toHaveProperty("error");
+      expect(response.body.error).toMatch(/not found/i);
+    });
+
+    it("should return 404 for invalid task id format", async () => {
+      await request(app).get("/tasks/invalid-id-123").expect(404);
+    });
+  });
 });
