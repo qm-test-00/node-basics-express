@@ -132,12 +132,21 @@ npm run test:api
 1. **Validazione:** Usa Zod per validare i dati in input
 2. **UUID:** Usa `uuid.v4()` per generare ID unici
 3. **Paginazione:** Calcola offset = (page - 1) \* limit
-4. **Worker Threads:** Usa `worker_threads` per task pesanti
+4. **Database Simulato:** Usa i dati in `data/users.json` come storage iniziale
+   - Puoi leggerli e modificarli in memoria
+   - Oppure implementare persistenza su file
+5. **Worker Threads:** Usa `worker_threads` per task pesanti
    - Crea un file worker separato (es. `heavy-task.worker.ts`)
    - Usa `new Worker()` per lanciare il worker
    - Comunica con `postMessage` e `on('message')`
    - Memorizza lo stato dei task in una Map/oggetto
-5. **Status Code:**
+6. **Docker:** Crea un Dockerfile per containerizzare l'applicazione
+   - Usa immagine base Node.js (es. `node:20-alpine`)
+   - COPY package files e RUN npm install
+   - COPY source code
+   - EXPOSE 3000
+   - CMD per avviare il server
+7. **Status Code:**
    - 200 OK (GET successo)
    - 201 Created (POST successo)
    - 202 Accepted (Task avviato)
@@ -145,6 +154,31 @@ npm run test:api
    - 400 Bad Request (validazione fallita)
    - 404 Not Found (risorsa non trovata)
    - 409 Conflict (email duplicata)
+
+---
+
+## 🐳 DOCKER
+
+Crea un `Dockerfile` per containerizzare il web server:
+
+```bash
+# Build dell'immagine
+docker build -t node-api-server .
+
+# Run del container
+docker run -p 3000:3000 node-api-server
+
+# Oppure con docker-compose (opzionale)
+docker-compose up
+```
+
+**Requisiti Dockerfile:**
+
+- Usa un'immagine Node.js LTS (es. `node:20-alpine` per ottimizzare dimensioni)
+- Installa dipendenze in fase di build
+- Compila TypeScript in produzione
+- Esponi la porta 3000
+- Usa un utente non-root per sicurezza (opzionale ma consigliato)
 
 ---
 
