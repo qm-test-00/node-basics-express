@@ -1,7 +1,7 @@
-# ESERCIZIO PRATICO Node.js COMPLETO - 10 MINUTI
+# ESERCIZIO PRATICO Node.js COMPLETO
 
 **Obiettivo:** Creare API REST minimale con validazione, errori e logging  
-**Stack:** Express + Zod + UUID
+**Stack:** Express + UUID + Validazione (Zod/Joi/Manuale)
 
 ---
 
@@ -99,7 +99,8 @@ I test Jest in `__tests__/api.test.ts` sono esempi da completare dopo l'implemen
 ### Runtime
 
 - `express` ^4.21.2 - Framework web
-- `zod` ^3.23.8 - Validazione schema
+- `zod` ^3.23.8 - Validazione schema (opzionale)
+- `joi` ^17.13.3 - Validazione schema alternativa (opzionale)
 - `uuid` ^11.0.3 - Generazione UUID
 
 ### Development
@@ -130,7 +131,10 @@ npm run test:api
 
 ## 💡 SUGGERIMENTI
 
-1. **Validazione:** Usa Zod per validare i dati in input
+1. **Validazione:** Puoi scegliere tra tre approcci:
+   - **Zod:** Validazione type-safe con TypeScript
+   - **Joi:** Validazione con API fluente e messaggi dettagliati
+   - **Manuale:** Validazione con if/else e regex (più controllo, più verbosa)
 2. **UUID:** Usa `uuid.v4()` per generare ID unici
 3. **Paginazione:** Calcola offset = (page - 1) \* limit
 4. **Database Simulato:** Usa i dati in `data/users.json` come storage iniziale
