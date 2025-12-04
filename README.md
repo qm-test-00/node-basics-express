@@ -9,9 +9,9 @@
 
 **Endpoint richiesti:**
 
-- `GET /users?page=1&limit=10` → Lista utenti paginata
-- `GET /users/:id` → Utente singolo
 - `POST /users` → Crea utente (201 Created)
+- `GET /users/:id` → Utente singolo
+- `GET /users?page=1&limit=10` → Lista utenti paginata
 - `DELETE /users/:id` → Elimina utente (204 No Content)
 - `POST /tasks/heavy` → Lancia task pesante su worker thread (202 Accepted)
 - `GET /tasks/:taskId` → Stato e risultato del task
@@ -19,12 +19,18 @@
 **Schema Utente:**
 
 ```typescript
-interface User {
+interface LegacyUser {
   id: string; // UUID
   name: string; // min 2 char
   email: string; // valid email
   createdAt: string; // ISO Date
 }
+
+interface NewUser extends LegacyUser {
+  isActive: boolean; // active status
+}
+
+type User = LegacyUser | NewUser;
 ```
 
 **Schema Task (Worker Thread):**
@@ -76,13 +82,7 @@ app.listen(PORT, () => {
 
 ## 🧪 TEST AUTOMATICO
 
-### Test Shell Script
-
-```bash
-chmod +x test.sh && npm run test:api
-```
-
-### Test Jest (opzionale)
+### Test Jest
 
 ```bash
 npm test              # esegue tutti i test
@@ -141,11 +141,7 @@ npm run test:api
    - Comunica con `postMessage` e `on('message')`
    - Memorizza lo stato dei task in una Map/oggetto
 6. **Docker:** Crea un Dockerfile per containerizzare l'applicazione
-   - Usa immagine base Node.js (es. `node:20-alpine`)
-   - COPY package files e RUN npm install
-   - COPY source code
-   - EXPOSE 3000
-   - CMD per avviare il server
+   - Usa immagine base Node.js (es. `node:24-alpine`)
 7. **Status Code:**
    - 200 OK (GET successo)
    - 201 Created (POST successo)
@@ -159,22 +155,11 @@ npm run test:api
 
 ## 🐳 DOCKER
 
-Crea un `Dockerfile` per containerizzare il web server:
-
-```bash
-# Build dell'immagine
-docker build -t node-api-server .
-
-# Run del container
-docker run -p 3000:3000 node-api-server
-
-# Oppure con docker-compose (opzionale)
-docker-compose up
-```
+Crea un `Dockerfile` per containerizzare il web server
 
 **Requisiti Dockerfile:**
 
-- Usa un'immagine Node.js LTS (es. `node:20-alpine` per ottimizzare dimensioni)
+- Usa un'immagine Node.js LTS (es. `node:24-alpine` per ottimizzare dimensioni)
 - Installa dipendenze in fase di build
 - Compila TypeScript in produzione
 - Esponi la porta 3000
@@ -185,7 +170,7 @@ docker-compose up
 ## 🔧 NOTE TECNICHE
 
 - **TypeScript:** Configurato con ES Modules (`type: "module"`)
-- **Target:** ES2022 con moduleResolution bundler
+- **Target:** ESNext con moduleResolution bundler
 - **Executor:** `tsx` per sviluppo veloce
 - **Testing:** Jest con ts-jest per supporto ESM
 
