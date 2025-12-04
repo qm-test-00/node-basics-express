@@ -12,6 +12,7 @@
 - `POST /users` → Crea utente (201 Created)
 - `GET /users/:id` → Utente singolo
 - `GET /users?page=1&limit=10` → Lista utenti paginata
+- `GET /users/active` → Lista utenti attivi (solo NewUser con isActive=true)
 - `DELETE /users/:id` → Elimina utente (204 No Content)
 - `POST /tasks/heavy` → Lancia task pesante su worker thread (202 Accepted)
 - `GET /tasks/:taskId` → Stato e risultato del task
@@ -135,14 +136,17 @@ npm run test:api
 4. **Database Simulato:** Usa i dati in `data/users.json` come storage iniziale
    - Puoi leggerli e modificarli in memoria
    - Oppure implementare persistenza su file
-5. **Worker Threads:** Usa `worker_threads` per task pesanti
+5. **Filtraggio Utenti Attivi:**
+   - Filtra solo utenti di tipo `NewUser` con `isActive === true`
+   - Usa type guard per verificare la presenza della proprietà `isActive`
+6. **Worker Threads:** Usa `worker_threads` per task pesanti
    - Crea un file worker separato (es. `heavy-task.worker.ts`)
    - Usa `new Worker()` per lanciare il worker
    - Comunica con `postMessage` e `on('message')`
    - Memorizza lo stato dei task in una Map/oggetto
-6. **Docker:** Crea un Dockerfile per containerizzare l'applicazione
+7. **Docker:** Crea un Dockerfile per containerizzare l'applicazione
    - Usa immagine base Node.js (es. `node:24-alpine`)
-7. **Status Code:**
+8. **Status Code:**
    - 200 OK (GET successo)
    - 201 Created (POST successo)
    - 202 Accepted (Task avviato)

@@ -275,6 +275,39 @@ describe("Users API Tests", () => {
     });
   });
 
+  describe.skip("GET /users/active", () => {
+    it("should return only active users", async () => {
+      const response = await request(app).get("/users/active").expect(200);
+
+      expect(Array.isArray(response.body)).toBe(true);
+
+      // Verifica che tutti gli utenti restituiti abbiano isActive: true
+      response.body.forEach((user: any) => {
+        expect(user).toHaveProperty("isActive", true);
+        expect(user).toHaveProperty("id");
+        expect(user).toHaveProperty("name");
+        expect(user).toHaveProperty("email");
+        expect(user).toHaveProperty("createdAt");
+      });
+    });
+
+    it("should return empty array if no active users exist", async () => {
+      // Assumendo che tutti gli utenti siano stati disattivati
+      const response = await request(app).get("/users/active").expect(200);
+
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it("should not return legacy users without isActive property", async () => {
+      const response = await request(app).get("/users/active").expect(200);
+
+      // Verifica che nessun utente legacy sia presente (senza isActive)
+      response.body.forEach((user: any) => {
+        expect(user).toHaveProperty("isActive");
+      });
+    });
+  });
+
   describe.skip("POST /tasks/heavy", () => {
     it("should start a heavy task on worker thread and return 202", async () => {
       const taskData = {
