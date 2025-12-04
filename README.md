@@ -149,7 +149,7 @@ npm run test:api
    - Comunica con `postMessage` e `on('message')`
    - Memorizza lo stato dei task in una Map/oggetto
 7. **Docker:** Crea un Dockerfile per containerizzare l'applicazione
-   - Usa immagine base Node.js (es. `node:24-alpine`)
+   - Usa immagine base Node.js (es. `node:22-alpine`)
 8. **Status Code:**
    - 200 OK (GET successo)
    - 201 Created (POST successo)
@@ -167,7 +167,7 @@ Crea un `Dockerfile` per containerizzare il web server
 
 **Requisiti Dockerfile:**
 
-- Usa un'immagine Node.js LTS (es. `node:24-alpine` per ottimizzare dimensioni)
+- Usa un'immagine Node.js LTS (es. `node:22-alpine` per ottimizzare dimensioni)
 - Installa dipendenze in fase di build
 - Compila TypeScript in produzione
 - Esponi la porta 3000
