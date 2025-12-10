@@ -3,8 +3,7 @@
     "id": "550e8400-e29b-41d4-a716-446655440001",
     "name": "Mario Rossi",
     "email": "mario.rossi@example.com",
-    "createdAt": "2024-01-15T10:30:00.000Z",
-    "isActive": false
+    "createdAt": "2024-01-15T10:30:00.000Z"
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440002",
@@ -16,8 +15,7 @@
     "id": "550e8400-e29b-41d4-a716-446655440003",
     "name": "Giuseppe Verdi",
     "email": "giuseppe.verdi@example.com",
-    "createdAt": "2024-03-10T09:00:00.000Z",
-    "isActive": true
+    "createdAt": "2024-03-10T09:00:00.000Z"
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440004",
@@ -41,8 +39,7 @@
     "id": "550e8400-e29b-41d4-a716-446655440007",
     "name": "Francesco Ricci",
     "email": "francesco.ricci@example.com",
-    "createdAt": "2024-07-22T08:15:00.000Z",
-    "isActive": true
+    "createdAt": "2024-07-22T08:15:00.000Z"
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440008",
